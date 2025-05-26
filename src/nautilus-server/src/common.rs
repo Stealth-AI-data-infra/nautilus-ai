@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use crate::AppState;
-use crate::EnclaveError;
+use super::EnclaveError;
 use axum::{extract::State, Json};
 use fastcrypto::traits::Signer;
 use fastcrypto::{encoding::Encoding, traits::ToFromBytes};
