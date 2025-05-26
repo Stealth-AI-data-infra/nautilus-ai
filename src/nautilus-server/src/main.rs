@@ -20,13 +20,15 @@ mod gemini;
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let eph_kp = Ed25519KeyPair::generate(&mut rand::thread_rng());
 
-    // This value can be stored with secret-manager. To do that, follow the prompt `sh configure_enclave.sh`
-    // Answer `y` to `Do you want to use a secret?` and finish.
-    // Then uncomment this code instead to fetch from env var API_KEY, which is fetched from secret manager.
-    let api_key = std::env::var("API_KEY").expect("API_KEY must be set");
-    // let api_key = "045a27812dbe456392913223221306".to_string();
+    // Fetch API keys from environment variables (set by secrets.json)
+    let api_key = std::env::var("weatherApiKey").expect("weatherApiKey must be set");
+    let gemini_api_key = std::env::var("geminiApiKey").expect("geminiApiKey must be set");
 
-    let state = Arc::new(AppState { eph_kp, api_key });
+    let state = Arc::new(AppState { 
+        eph_kp, 
+        api_key, 
+        gemini_api_key 
+    });
 
     // Define your own restricted CORS policy here if needed.
     let cors = CorsLayer::new().allow_methods(Any).allow_headers(Any);
