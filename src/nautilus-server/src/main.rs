@@ -12,10 +12,6 @@ use std::sync::Arc;
 use tower_http::cors::{Any, CorsLayer};
 use tracing::info;
 
-mod app;
-mod common;
-mod gemini;
-
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let eph_kp = Ed25519KeyPair::generate(&mut rand::thread_rng());
