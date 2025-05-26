@@ -3,7 +3,8 @@
 
 use crate::common::IntentMessage;
 use crate::common::{to_signed_response, IntentScope, ProcessDataRequest, ProcessedDataResponse};
-use crate::{AppState, EnclaveError};
+use crate::AppState;
+use crate::EnclaveError;
 use axum::extract::State;
 use axum::Json;
 use serde::{Deserialize, Serialize};
