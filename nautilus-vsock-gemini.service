@@ -1,0 +1,15 @@
+[Unit]
+Description=Nautilus VSOCK Proxy for Gemini
+After=network.target nitro-enclaves-allocator.service
+Requires=nitro-enclaves-allocator.service
+
+[Service]
+Type=simple
+ExecStart=/bin/bash -c 'vsock-proxy 8102 generativelanguage.googleapis.com 443 --config /etc/nitro_enclaves/vsock-proxy.yaml & vsock-proxy 8103 storage.googleapis.com 443 --config /etc/nitro_enclaves/vsock-proxy.yaml'
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target 

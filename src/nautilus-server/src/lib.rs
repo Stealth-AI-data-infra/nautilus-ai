@@ -12,11 +12,14 @@ pub mod app;
 pub mod common;
 
 /// App state, at minimum needs to maintain the ephemeral keypair.  
+#[derive(Clone)]
 pub struct AppState {
     /// Ephemeral keypair on boot
     pub eph_kp: Ed25519KeyPair,
     /// API key when querying api.weatherapi.com
     pub api_key: String,
+    /// Gemini API key
+    pub gemini_api_key: String,
 }
 
 /// Implement IntoResponse for EnclaveError.

@@ -1,0 +1,9 @@
+{
+  "key_pair": "my-nautilus-key",
+  "region": "us-east-1",
+  "ami_id": "ami-085ad6ae776d8f09c",
+  "instance_name": "nautilus-enclave",
+  "use_secret": true,
+  "secret_name": "weather-api-key",
+  "secret_value": "045a27812dbe456392913223221306"
+}

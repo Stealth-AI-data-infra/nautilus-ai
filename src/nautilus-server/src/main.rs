@@ -7,12 +7,17 @@ use fastcrypto::{ed25519::Ed25519KeyPair, traits::KeyPair};
 use nautilus_server::app::process_data;
 use nautilus_server::common::{get_attestation, health_check};
 use nautilus_server::AppState;
+use nautilus_server::gemini::process_gemini_query;
 use std::sync::Arc;
 use tower_http::cors::{Any, CorsLayer};
 use tracing::info;
 
+mod app;
+mod common;
+mod gemini;
+
 #[tokio::main]
-async fn main() -> Result<()> {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let eph_kp = Ed25519KeyPair::generate(&mut rand::thread_rng());
 
     // This value can be stored with secret-manager. To do that, follow the prompt `sh configure_enclave.sh`
@@ -31,6 +36,7 @@ async fn main() -> Result<()> {
         .route("/get_attestation", get(get_attestation))
         .route("/process_data", post(process_data))
         .route("/health_check", get(health_check))
+        .route("/process_gemini", post(process_gemini_query))
         .with_state(state)
         .layer(cors);
 

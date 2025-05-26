@@ -572,3 +572,6 @@ echo "[*] ssh inside the launched EC2 instance. e.g. \`ssh ec2-user@\"$PUBLIC_IP
 echo "[*] Clone or copy the repo with the above generated code."
 echo "[*] Inside repo directory: 'make' and then 'make run'"
 echo "[*] Run expose_enclave.sh from within the EC2 instance to expose the enclave to the internet."
+
+echo "- {address: generativelanguage.googleapis.com, port: 443}" | sudo tee -a /etc/nitro_enclaves/vsock-proxy.yaml
+echo "- {address: storage.googleapis.com, port: 443}" | sudo tee -a /etc/nitro_enclaves/vsock-proxy.yaml
