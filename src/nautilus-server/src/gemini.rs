@@ -10,6 +10,8 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::sync::Arc;
 use sha2::{Sha256, Digest};
+use reqwest;
+use base64::{Engine as _, engine::general_purpose};
 
 /// Inner type T for IntentMessage<T>
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -32,8 +34,8 @@ pub async fn process_gemini_query(
     State(state): State<Arc<AppState>>,
     Json(request): Json<ProcessDataRequest<GeminiRequest>>,
 ) -> Result<Json<ProcessedDataResponse<IntentMessage<GeminiResponse>>>, EnclaveError> {
-    // Hash the file content
-    let file_bytes = base64::decode(&request.payload.file_content)
+    // Decode the base64 file content
+    let file_bytes = general_purpose::STANDARD.decode(&request.payload.file_content)
         .map_err(|e| EnclaveError::GenericError(format!("Failed to decode file content: {}", e)))?;
     
     let mut hasher = Sha256::new();

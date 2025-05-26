@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use crate::AppState;
-use crate::EnclaveError;
+use aws_nitro_enclaves_nsm_api::api::Request;
+use nautilus_server::EnclaveError;
 use axum::{extract::State, Json};
 use fastcrypto::traits::Signer;
 use fastcrypto::{encoding::Encoding, traits::ToFromBytes};
 use fastcrypto::{encoding::Hex, traits::KeyPair as FcKeyPair};
-use nsm_api::api::{Request as NsmRequest, Response as NsmResponse};
 use nsm_api::driver;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};

@@ -46,7 +46,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     info!("listening on {}", listener.local_addr().unwrap());
     axum::serve(listener, app.into_make_service())
         .await
-        .map_err(|e| anyhow::anyhow!("Server error: {}", e))
+        .map_err(|e| Box::new(e) as Box<dyn std::error::Error>)
 }
 
 async fn ping() -> &'static str {
