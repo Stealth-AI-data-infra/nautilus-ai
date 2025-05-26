@@ -1,8 +1,8 @@
 // Copyright (c), Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-use nautilus_server::AppState;
-use nautilus_server::EnclaveError;
+use crate::AppState;
+use crate::EnclaveError;
 use axum::{extract::State, Json};
 use fastcrypto::traits::Signer;
 use fastcrypto::{encoding::Encoding, traits::ToFromBytes};
