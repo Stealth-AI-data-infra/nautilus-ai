@@ -12,7 +12,6 @@ pub mod app;
 pub mod common;
 
 /// App state, at minimum needs to maintain the ephemeral keypair.  
-#[derive(Clone)]
 pub struct AppState {
     /// Ephemeral keypair on boot
     pub eph_kp: Ed25519KeyPair,
