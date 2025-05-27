@@ -26,7 +26,6 @@ echo "127.0.0.64   api.weatherapi.com" >> /etc/hosts
 echo "127.0.0.65   generativelanguage.googleapis.com" >> /etc/hosts
 echo "127.0.0.66   storage.googleapis.com" >> /etc/hosts
 
-
 # == ATTENTION: code should be generated here that parses allowed_endpoints.yaml and populate domains here ===
 
 cat /etc/hosts
