@@ -17,8 +17,7 @@ public struct AiInferenceNFT has key, store {
     id: UID,
     question: String,
     answer: String,
-    model: String,
-    file_hash: vector<u8>,
+    filename: String,
     timestamp_ms: u64,
 }
 
@@ -26,8 +25,7 @@ public struct AiInferenceNFT has key, store {
 public struct GeminiResponse has copy, drop {
     question: String,
     answer: String,
-    model: String,
-    file_hash: vector<u8>,
+    filename: String,
 }
 
 public struct GEMINI has drop {}
@@ -49,8 +47,7 @@ fun init(otw: GEMINI, ctx: &mut TxContext) {
 public fun query_gemini<T>(
     question: String,
     answer: String,
-    model: String,
-    file_hash: vector<u8>,
+    filename: String,
     timestamp_ms: u64,
     sig: &vector<u8>,
     enclave: &Enclave<T>,
@@ -59,7 +56,7 @@ public fun query_gemini<T>(
     let res = enclave.verify_signature(
         GEMINI_INTENT,
         timestamp_ms,
-        GeminiResponse { question, answer, model, file_hash },
+        GeminiResponse { question, answer, filename },
         sig,
     );
     assert!(res, EInvalidSignature);
@@ -68,8 +65,7 @@ public fun query_gemini<T>(
         id: object::new(ctx),
         question,
         answer,
-        model,
-        file_hash,
+        filename,
         timestamp_ms,
     }
 } 
