@@ -51,7 +51,7 @@ pub async fn process_gemini_query(
     );
 
     let prompt = format!(
-        "Analyze the following {} file and answer this question: {}\n\nFile content:\n{}",
+        "Analyze the following {} file and answer this question: {}\n\nFile content:\n{}\n\nIMPORTANT: Provide a clear, concise answer without using any special characters, markdown formatting, asterisks, dollar signs, or newlines. Use only plain text with spaces.",
         request.payload.file_type,
         request.payload.question,
         String::from_utf8_lossy(&file_bytes)
@@ -86,9 +86,33 @@ pub async fn process_gemini_query(
     let json = response.json::<Value>().await
         .map_err(|e| EnclaveError::GenericError(format!("Failed to parse Gemini response: {}", e)))?;
 
-    let answer = json["candidates"][0]["content"]["parts"][0]["text"]
+    let raw_answer = json["candidates"][0]["content"]["parts"][0]["text"]
         .as_str()
         .unwrap_or("No response generated");
+
+    // Clean the answer to make it blockchain-friendly
+    let clean_answer = raw_answer
+        .replace('\n', " ")          // Replace newlines with spaces
+        .replace('\r', " ")          // Replace carriage returns
+        .replace('\t', " ")          // Replace tabs with spaces
+        .replace("**", "")           // Remove markdown bold
+        .replace("*", "")            // Remove markdown italic/lists
+        .replace("$", "USD ")        // Replace dollar signs
+        .replace("#", "")            // Remove headers
+        .replace("`", "'")           // Replace backticks
+        .replace("\"", "'")          // Replace quotes with single quotes
+        .replace("\\", "/")          // Replace backslashes
+        .replace("  ", " ")          // Replace double spaces
+        .trim()                      // Trim whitespace
+        .to_string();
+
+    // Also clean the question for consistency
+    let clean_question = request.payload.question
+        .replace('\n', " ")
+        .replace('\r', " ")
+        .replace("\"", "'")
+        .trim()
+        .to_string();
 
     let current_timestamp = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
@@ -98,8 +122,8 @@ pub async fn process_gemini_query(
     Ok(Json(to_signed_response(
         &state.eph_kp,
         GeminiResponse {
-            question: request.payload.question.clone(),
-            answer: answer.to_string(),
+            question: clean_question,
+            answer: clean_answer,
             model: model.to_string(),
             file_hash,
         },
