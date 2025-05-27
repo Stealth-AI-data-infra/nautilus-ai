@@ -10,7 +10,6 @@ use axum::Json;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::sync::Arc;
-use sha2::{Sha256, Digest};
 use reqwest;
 use base64::{Engine as _, engine::general_purpose};
 
@@ -19,8 +18,7 @@ use base64::{Engine as _, engine::general_purpose};
 pub struct GeminiResponse {
     pub question: String,
     pub answer: String,
-    pub model: String,
-    pub file_hash: Vec<u8>,
+    pub filename: String,
 }
 
 /// Inner type T for ProcessDataRequest<T>
@@ -28,7 +26,7 @@ pub struct GeminiResponse {
 pub struct GeminiRequest {
     pub question: String,
     pub file_content: String, // Base64 encoded file content
-    pub file_type: String,    // mime type
+    pub filename: String,     // Just the filename, not full path
 }
 
 pub async fn process_gemini_query(
@@ -39,10 +37,6 @@ pub async fn process_gemini_query(
     let file_bytes = general_purpose::STANDARD.decode(&request.payload.file_content)
         .map_err(|e| EnclaveError::GenericError(format!("Failed to decode file content: {}", e)))?;
     
-    let mut hasher = Sha256::new();
-    hasher.update(&file_bytes);
-    let file_hash = hasher.finalize().to_vec();
-
     // Prepare Gemini API request
     let model = "gemini-1.5-flash"; // or "gemini-1.5-pro"
     let url = format!(
@@ -52,7 +46,7 @@ pub async fn process_gemini_query(
 
     let prompt = format!(
         "Analyze the following {} file and answer this question: {}\n\nFile content:\n{}\n\nIMPORTANT: Provide a clear, concise answer without using any special characters, markdown formatting, asterisks, dollar signs, or newlines. Use only plain text with spaces.",
-        request.payload.file_type,
+        request.payload.filename,
         request.payload.question,
         String::from_utf8_lossy(&file_bytes)
     );
@@ -124,8 +118,7 @@ pub async fn process_gemini_query(
         GeminiResponse {
             question: clean_question,
             answer: clean_answer,
-            model: model.to_string(),
-            file_hash,
+            filename: request.payload.filename.clone(),
         },
         current_timestamp,
         IntentScope::Gemini,
