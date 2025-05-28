@@ -14,33 +14,41 @@ import time
 
 
 def server(local_ip, local_port, remote_cid, remote_port):
-    try:
-        dock_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        dock_socket.bind((local_ip, local_port))
-        dock_socket.listen(5)
+    while True:
+        try:
+            dock_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            dock_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            dock_socket.bind((local_ip, local_port))
+            dock_socket.listen(5)
+            print(f"[INFO] Traffic forwarder listening on {local_ip}:{local_port}")
 
-        while True:
-            client_socket = dock_socket.accept()[0]
+            while True:
+                try:
+                    client_socket, addr = dock_socket.accept()
+                    print(f"[INFO] Accepted connection from {addr}")
 
-            server_socket = socket.socket(socket.AF_VSOCK, socket.SOCK_STREAM)
-            server_socket.connect((remote_cid, remote_port))
+                    server_socket = socket.socket(socket.AF_VSOCK, socket.SOCK_STREAM)
+                    server_socket.connect((remote_cid, remote_port))
 
-            outgoing_thread = threading.Thread(target=forward,
-                                               args=(client_socket,
-                                                     server_socket))
-            incoming_thread = threading.Thread(target=forward,
-                                               args=(server_socket,
-                                                     client_socket))
+                    outgoing_thread = threading.Thread(target=forward,
+                                                       args=(client_socket,
+                                                             server_socket))
+                    incoming_thread = threading.Thread(target=forward,
+                                                       args=(server_socket,
+                                                             client_socket))
 
-            outgoing_thread.start()
-            incoming_thread.start()
-    finally:
-        new_thread = threading.Thread(target=server,
-                                      args=(local_ip, local_port, remote_cid,
-                                            remote_port))
-        new_thread.start()
-
-    return
+                    outgoing_thread.start()
+                    incoming_thread.start()
+                except Exception as e:
+                    print(f"[ERROR] Error handling connection: {e}")
+                    time.sleep(1)
+        except Exception as e:
+            print(f"[ERROR] Server error: {e}")
+            time.sleep(5)  # Wait before retry
+            try:
+                dock_socket.close()
+            except:
+                pass
 
 
 def forward(source, destination):
