@@ -1,0 +1,7 @@
+{
+  "payload": {
+    "question": "What is the total revenue and which product generated the most revenue?",
+    "file_content": "RGF0ZSxQcm9kdWN0LFF1YW50aXR5LFJldmVudWUKMjAyNC0wMS0wMSxXaWRnZXQgQSwxNTAsNDUwMAoyMDI0LTAxLTAyLFdpZGdldCBCLDIwMCw4MDAwCjIwMjQtMDEtMDMsV2lkZ2V0IEEsMTc1LDUyNTAKMjAyNC0wMS0wNCxXaWRnZXQgQywxMDAsMTIwMDAKMjAyNC0wMS0wNSxXaWRnZXQgQiwyMjUsOTAwMAo=",
+    "filename": "sales_data.csv"
+  }
+}
